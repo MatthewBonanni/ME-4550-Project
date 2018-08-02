@@ -94,17 +94,25 @@ kc = 1;     %1 for combined loading
 
 Se = (ka * kb * kc * Se_prime);
 
-
+%% Diameter calculation based on fatigue approach
+% Using DE-Goodman Method
 
 tolerance = 1;
-MGM_dnext = 5; %initial condition test
+MGM_dnext = 5; % Initial diameter assumption
 
 while tolerance >= .001
-    MGM_d = double (solve (  ( (16 * n / (pi * d^3))   * ((Se^-1)*sqrt((4*Kf*M_a)^2 + 3* (Kfs*T_a)^2) + (Sut^-1)*sqrt(4*(Kf*M_m)^2+3*(Kfs*T_m)^2)))-1));
-    MGM_d = MGM_d((MGM_d > 0) & imag(MGM_d) == 0);
-    tolerance = abs(((MGM_d - MGM_dnext)/MGM_d));
-    MGM_dnext = MGM_d; %remove this semicolon to view convergence
+    MGM_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt((4 * Kf * M_a)^2 + ...
+        3 * (Kfs * T_a)^2) + (Sut^-1) * sqrt(4 * (Kf * M_m)^2 + 3 * (Kfs * T_m)^2))) - 1));
+    
+    MGM_d = MGM_d((MGM_d > 0) & imag(MGM_d) == 0); % Select real, positive solution
+    tolerance = abs(((MGM_d - MGM_dnext) / MGM_d));
+    MGM_dnext = MGM_d;
     kb = (.879 * MGM_d^-.107);
     Se = (ka * kb * kc * Se_prime);
 end
-MGM_d
+
+% Using DE-Gerber Method
+
+% Using DE-ASME Elliptic Method
+
+% Using DE-Soderberg Method
