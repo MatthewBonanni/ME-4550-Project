@@ -24,22 +24,29 @@ T = A_y * (d_A/2);
 
 % Calculate P_C from torque balance
 
-C_x = -T / (d_C / 2);
-P_C = C_x / cosd(P_Angle);
+C_z = -T / (d_C / 2);
+P_C = -C_z / cosd(P_Angle);
 C_y = P_C * sind(P_Angle);
 
 % Z Moment balance around B
 
-O_y;
+O_y = -(A_y * AB + C_y * BC) / (OA + AB);
+B_y = -O_y - A_y + C_y;
 
-B_y = -1 * ((OA * A_y) - (C_y * (OA + AB + BC))/(OA + AB));
-O_y = -1 * (A_y - C_y + B_y);
-B_z = ((-C_z * (OA + AB + BC)) + (A_z * OA)) / (OA + AB);
-O_z = B_z - A_z + C_z;
-M_ay = O_y * OA;
-M_az = O_z * OA;
+% Y Moment balance around B
+
+O_z = -(A_z * AB + C_z * BC) / (OA + AB);
+B_z = O_z - A_z + C_z;
+
+% Moments at A
+
+M_ay = O_z * OA;
+M_az = -O_y * OA;
 M_a_tot = sqrt((M_ay^2) + (M_az)^2);
-M_by = C_y * BC;
-M_bz = A_z * BC;
+
+% Moments at B
+
+M_by = -C_z * BC;
+M_bz = C_y * BC;
 M_b_tot = sqrt((M_by^2)+(M_bz^2));
 
