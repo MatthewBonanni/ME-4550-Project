@@ -65,11 +65,13 @@ M_By = -C_z * BC;
 M_Bz = C_y * BC;
 M_B_tot = sqrt((M_By^2)+(M_Bz^2));
 
+%% Stresses
+
 M_a = max(M_A_tot, M_B_tot);
 
 % Critical point determined to be at B, where M_tot is largest
 
-syms d   %symbolic shaft diameter
+syms d % symbolic shaft diameter
 
 sigma_a = (32* M_a / (pi*d));
 sigma_m = 0;
@@ -84,7 +86,7 @@ Se_prime = Sut * .5;
 ka_a = 1.34;
 ka_b = -.265;
 ka = (ka_a)*(Sut^ka_b);
-kb = .85;   %guess for fist iteration
-kc = 1;     %1 for combined loading
+kb = .85; % guess for fist iteration
+kc = 1; % 1 for combined loading
 
 Se = (ka * kb * kc * Se_prime);
