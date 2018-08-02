@@ -85,8 +85,9 @@ Kfs = 1;
 Se_prime = Sut * .5;
 ka_a = 2.7;
 ka_b = -.265;
-ka = (ka_a)*(Sut^ka_b);
+ka = (ka_a)*((Sut/1000)^(ka_b));
 kb = .9;   %guess for fist iteration
 kc = 1;     %1 for combined loading
 
 Se = (ka * kb * kc * Se_prime)
+
