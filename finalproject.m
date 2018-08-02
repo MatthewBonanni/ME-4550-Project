@@ -83,10 +83,10 @@ Kfs = 1;
 
 % Fatigue failure conditions
 Se_prime = Sut * .5;
-ka_a = 1.34;
+ka_a = 2.7;
 ka_b = -.265;
 ka = (ka_a)*(Sut^ka_b);
-kb = .85; % guess for fist iteration
-kc = 1; % 1 for combined loading
+kb = .9;   %guess for fist iteration
+kc = 1;     %1 for combined loading
 
-Se = (ka * kb * kc * Se_prime);
+Se = (ka * kb * kc * Se_prime)
