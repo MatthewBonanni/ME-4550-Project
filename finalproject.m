@@ -22,7 +22,7 @@ BC = 10;
 
 % Strength characteristics
 
-n = 3;
+n_desired = 3;
 Sy = 71000;
 Sut = 85000;
 
@@ -91,3 +91,17 @@ kc = 1;     %1 for combined loading
 
 Se = (ka * kb * kc * Se_prime)
 
+%% Static D
+
+% using Distortion Energy (DE) Method
+
+syms sd % symbolic shaft diameter
+
+sigma = (32 * M_a / (pi*sd^3));
+tao = (16 * M_a / (pi*sd^3));
+
+sigma_prime = (sigma^2 + 3*tao^2)^.5
+n = Sy / sigma_prime
+solutions = double(solve(n - n_desired))
+
+sd = solutions((solutions > 0) & imag(solutions) == 0)
