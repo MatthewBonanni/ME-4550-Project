@@ -73,10 +73,13 @@ M_a = max(M_A_tot, M_B_tot);
 
 syms d % symbolic shaft diameter
 
-sigma_a = (32* M_a / (pi*d));
+sigma_a = (32* M_a / (pi*d^3));
 sigma_m = 0;
+M_m = 0;
 tao_a = 0;
-tao_m = (16* M_a / (pi*d));
+T_a = 0;
+tao_m = (16* M_a / (pi*d^3));
+T_m = T;
 
 Kf = 1;
 Kfs = 1;
@@ -89,5 +92,19 @@ ka = (ka_a)*((Sut/1000)^(ka_b));
 kb = .9;   %guess for fist iteration
 kc = 1;     %1 for combined loading
 
-Se = (ka * kb * kc * Se_prime)
+Se = (ka * kb * kc * Se_prime);
 
+
+
+tolerance = 1;
+MGM_dnext = 5; %initial condition test
+
+while tolerance >= .001
+    MGM_d = double (solve (  ( (16 * n / (pi * d^3))   * ((Se^-1)*sqrt((4*Kf*M_a)^2 + 3* (Kfs*T_a)^2) + (Sut^-1)*sqrt(4*(Kf*M_m)^2+3*(Kfs*T_m)^2)))-1));
+    MGM_d = MGM_d((MGM_d > 0) & imag(MGM_d) == 0);
+    tolerance = abs(((MGM_d - MGM_dnext)/MGM_d));
+    MGM_dnext = MGM_d; %remove this semicolon to view convergence
+    kb = (.879 * MGM_d^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
+MGM_d
