@@ -55,12 +55,36 @@ B_z = O_z - A_z + C_z;
 
 % Moments at A
 
-M_ay = O_z * OA;
-M_az = -O_y * OA;
-M_a_tot = sqrt((M_ay^2) + (M_az)^2);
+M_Ay = O_z * OA;
+M_Az = -O_y * OA;
+M_A_tot = sqrt((M_Ay^2) + (M_Az)^2);
 
 % Moments at B
 
-M_by = -C_z * BC;
-M_bz = C_y * BC;
-M_b_tot = sqrt((M_by^2)+(M_bz^2));
+M_By = -C_z * BC;
+M_Bz = C_y * BC;
+M_B_tot = sqrt((M_By^2)+(M_Bz^2));
+
+M_a = max(M_A_tot, M_B_tot);
+
+% Critical point determined to be at B, where M_tot is largest
+
+syms d   %symbolic shaft diameter
+
+sigma_a = (32* M_a / (pi*d));
+sigma_m = 0;
+tao_a = 0;
+tao_m = (16* M_a / (pi*d));
+
+Kf = 1;
+Kfs = 1;
+
+% Fatigue failure conditions
+Se_prime = Sut * .5;
+ka_a = 1.34;
+ka_b = -.265;
+ka = (ka_a)*(Sut^ka_b);
+kb = .85;   %guess for fist iteration
+kc = 1;     %1 for combined loading
+
+Se = (ka * kb * kc * Se_prime);
