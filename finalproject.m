@@ -73,10 +73,13 @@ M_a = max(M_A_tot, M_B_tot);
 
 syms d % symbolic shaft diameter
 
-sigma_a = (32* M_a / (pi*d));
+sigma_a = (32* M_a / (pi*d^3));
 sigma_m = 0;
+M_m = 0;
 tao_a = 0;
-tao_m = (16* M_a / (pi*d));
+T_a = 0;
+tao_m = (16* M_a / (pi*d^3));
+T_m = T;
 
 Kf = 1;
 Kfs = 1;
@@ -105,6 +108,29 @@ n_y = Sy / sigma_prime;
 solutions = double(solve(n_y - n_desired));
 
 d_s = solutions((solutions > 0) & imag(solutions) == 0);
+
+%% Diameter calculation based on fatigue approach
+% Using DE-Goodman Method
+
+tolerance = 1;
+MGM_dnext = 5; % Initial diameter assumption
+
+while tolerance >= .001
+    MGM_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt((4 * Kf * M_a)^2 + ...
+        3 * (Kfs * T_a)^2) + (Sut^-1) * sqrt(4 * (Kf * M_m)^2 + 3 * (Kfs * T_m)^2))) - 1));
+    
+    MGM_d = MGM_d((MGM_d > 0) & imag(MGM_d) == 0); % Select real, positive solution
+    tolerance = abs(((MGM_d - MGM_dnext) / MGM_d));
+    MGM_dnext = MGM_d;
+    kb = (.879 * MGM_d^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
+
+% Using DE-Gerber Method
+
+% Using DE-ASME Elliptic Method
+
+% Using DE-Soderberg Method
 
 %% Critical speed
 
