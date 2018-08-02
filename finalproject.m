@@ -82,6 +82,7 @@ Kf = 1;
 Kfs = 1;
 
 % Fatigue failure conditions
+
 Se_prime = Sut * .5;
 ka_a = 2.7;
 ka_b = -.265;
@@ -89,19 +90,22 @@ ka = (ka_a)*((Sut/1000)^(ka_b));
 kb = .9;   %guess for fist iteration
 kc = 1;     %1 for combined loading
 
-Se = (ka * kb * kc * Se_prime)
+Se = (ka * kb * kc * Se_prime);
 
-%% Static D
+%% Diameter calculation based on static approach
+% Using Distortion Energy (DE) Method
 
-% using Distortion Energy (DE) Method
+syms d_s % symbolic shaft diameter
 
-syms sd % symbolic shaft diameter
+sigma = (32 * M_a / (pi*d_s^3));
+tao = (16 * M_a / (pi*d_s^3));
 
-sigma = (32 * M_a / (pi*sd^3));
-tao = (16 * M_a / (pi*sd^3));
+sigma_prime = (sigma^2 + 3*tao^2)^.5;
+n_y = Sy / sigma_prime;
+solutions = double(solve(n_y - n_desired));
 
-sigma_prime = (sigma^2 + 3*tao^2)^.5
-n = Sy / sigma_prime
-solutions = double(solve(n - n_desired))
+d_s = solutions((solutions > 0) & imag(solutions) == 0);
 
-sd = solutions((solutions > 0) & imag(solutions) == 0)
+%% Critical speed
+
+Nc = (30 / pi) * sqrt(9.81 / (deflection));
