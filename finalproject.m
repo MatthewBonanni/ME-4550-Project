@@ -2,16 +2,31 @@
 %
 % Matthew Bonanni, Nicolas Iacovelli, Adrian Kombe, Ryan Loehr, Becca Sung
 
+%% Parameters and Characteristics
+
+% Gear diameters
+
 d_A = 24;
 d_C = 10;
-n = 3;
-Sy = 71000;
-Sut = 85000;
+
+% Load parameters
+
 P_Angle = 20;
 P_A = 600;
+
+% Length parameters
+
 OA = 20;
 AB = 16;
 BC = 10;
+
+% Strength characteristics
+
+n = 3;
+Sy = 71000;
+Sut = 85000;
+
+%% Force balance
 
 % Breaking P_A into components
 
@@ -49,4 +64,3 @@ M_a_tot = sqrt((M_ay^2) + (M_az)^2);
 M_by = -C_z * BC;
 M_bz = C_y * BC;
 M_b_tot = sqrt((M_by^2)+(M_bz^2));
-
