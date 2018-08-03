@@ -84,6 +84,9 @@ T_m = T;
 Kf = 1;
 Kfs = 1;
 
+sigma_a_prime = ((Kf*sigma_a)^2+3*(Kfs*tao_a)^2)^.5;
+sigma_m_prime = ((Kf*sigma_m)^2+3*(Kfs*tao_m)^2)^.5;
+
 % Fatigue failure conditions
 Se_prime = Sut * .5;
 ka_a = 2.7;
@@ -98,7 +101,7 @@ Se = (ka * kb * kc * Se_prime);
 % Using DE-Goodman Method
 
 tolerance = 1;
-MGM_dnext = 5; % Initial diameter assumption
+MGM_dnext = 6; % Initial diameter assumption
 
 while tolerance >= .001
     MGM_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt((4 * Kf * M_a)^2 + ...
@@ -113,6 +116,46 @@ end
 
 % Using DE-Gerber Method
 
+tolerance = 1;
+Ger_dnext = 6; % Initial diameter assumption
+
+while tolerance >= .001
+    Ger_d = double(solve( (n*sigma_a_prime/Se) + (n*sigma_m_prime/Sy)^2 -1));
+    
+    Ger_d = Ger_d((Ger_d > 0) & imag(Ger_d) == 0); % Select real, positive solution
+    tolerance = abs(((Ger_d - Ger_dnext) / Ger_d));
+    Ger_dnext = Ger_d;
+    kb = (.879 * Ger_d^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
+
 % Using DE-ASME Elliptic Method
 
+tolerance = 1;
+ASME_dnext = 6; % Initial diameter assumption
+
+while tolerance >= .001
+    ASME_d = double(solve( (n*sigma_a_prime/Se)^2 + (n*sigma_m_prime/Sy)^2 -1));
+    
+    ASME_d = ASME_d((ASME_d > 0) & imag(ASME_d) == 0); % Select real, positive solution
+    tolerance = abs(((ASME_d - ASME_dnext) / ASME_d));
+    ASME_dnext = ASME_d;
+    kb = (.879 * ASME_d^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
+
 % Using DE-Soderberg Method
+
+tolerance = 1;
+Soder_dnext = 6; % Initial diameter assumption
+
+while tolerance >= .001
+    Soder_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt((4 * Kf * M_a)^2 + ...
+        3 * (Kfs * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf * M_m)^2 + 3 * (Kfs * T_m)^2))) - 1));
+    
+    Soder_d = Soder_d((Soder_d > 0) & imag(Soder_d) == 0); % Select real, positive solution
+    tolerance = abs(((Soder_d - Soder_dnext) / Soder_d));
+    Soder_dnext = Soder_d;
+    kb = (.879 * Soder_d^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
