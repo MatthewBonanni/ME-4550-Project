@@ -242,6 +242,7 @@ hold on
 plot(x, F_y, 'LineWidth', 2);
 plot(x, F_z, 'LineWidth', 2);
 plot(x, F, 'LineWidth', 2);
+fplot(@(x) 0, [0 46], 'k--');
 title("Shear")
 xlabel("Shaft Position (in)");
 ylabel("Shear (lbf)");
@@ -252,6 +253,7 @@ hold on
 plot(x, M_y, 'LineWidth', 2);
 plot(x, M_z, 'LineWidth', 2);
 plot(x, M, 'LineWidth', 2);
+fplot(@(x) 0, [0 46], 'k--');
 title("Moment")
 xlabel("Shaft Position (in)");
 ylabel("Moment (lbf-in)");
@@ -262,6 +264,7 @@ hold on
 plot(x, delta_y, 'LineWidth', 2);
 plot(x, delta_z, 'LineWidth', 2);
 plot(x, delta, 'LineWidth', 2);
+fplot(@(x) 0, [0 46], 'k--');
 title("Deflection")
 xlabel("Shaft Position (in)");
 ylabel("Deflection (in)");
@@ -272,6 +275,7 @@ hold on
 plot(x, slope_y, 'LineWidth', 2);
 plot(x, slope_z, 'LineWidth', 2);
 plot(x, slope, 'LineWidth', 2);
+fplot(@(x) 0, [0 46], 'k--');
 title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
