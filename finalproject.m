@@ -104,7 +104,7 @@ tolerance = 1;
 MGM_dnext = 6; % Initial diameter assumption
 
 while tolerance >= .001
-    MGM_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt((4 * Kf * M_a)^2 + ...
+    MGM_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt(4* (Kf * M_a)^2 + ...
         3 * (Kfs * T_a)^2) + (Sut^-1) * sqrt(4 * (Kf * M_m)^2 + 3 * (Kfs * T_m)^2))) - 1));
     
     MGM_d = MGM_d((MGM_d > 0) & imag(MGM_d) == 0); % Select real, positive solution
@@ -150,7 +150,7 @@ tolerance = 1;
 Soder_dnext = 6; % Initial diameter assumption
 
 while tolerance >= .001
-    Soder_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt((4 * Kf * M_a)^2 + ...
+    Soder_d = double(solve(((16 * n / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf * M_a)^2 + ...
         3 * (Kfs * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf * M_m)^2 + 3 * (Kfs * T_m)^2))) - 1));
     
     Soder_d = Soder_d((Soder_d > 0) & imag(Soder_d) == 0); % Select real, positive solution
