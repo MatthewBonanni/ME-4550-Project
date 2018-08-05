@@ -180,6 +180,8 @@ end
 
 %% Deflection - Integral Method
 
+% Fatigue
+
 I = (pi / 64) * Soder_d ^ 4;
 
 s = 0.01; % step size
@@ -194,16 +196,16 @@ Fy_OA = O_y + zeros(size(x_OA));
 Fy_AB = O_y + A_y + zeros(size(x_AB));
 Fy_BC = O_y + A_y + B_y + zeros(size(x_BC));
 
-Fy = [Fy_OA Fy_AB Fy_BC];
+F_y = [Fy_OA Fy_AB Fy_BC];
 
 Fz_OA = O_z + zeros(size(x_OA));
 Fz_AB = O_z - A_z + zeros(size(x_AB));
 Fz_BC = O_z - A_z + B_z + zeros(size(x_BC));
 
-Fz = [Fz_OA Fz_AB Fz_BC];
+F_z = [Fz_OA Fz_AB Fz_BC];
 
-M_y = cumtrapz(x, Fz);
-M_z = cumtrapz(x, Fy);
+M_y = cumtrapz(x, F_z);
+M_z = cumtrapz(x, F_y);
 
 int1M_y = cumtrapz(x, M_y);
 int1M_z = cumtrapz(x, M_z);
@@ -220,6 +222,8 @@ delta_z = (int2M_z / (E * I)) + c1_z * x;
 slope_y = (int1M_y / (E * I)) + c1_y;
 slope_z = (int1M_z / (E * I)) + c1_z;
 
+F = sqrt(F_y.^2 + F_z.^2);
+M = sqrt(M_y.^2 + M_z.^2);
 delta = sqrt(delta_y.^2 + delta_z.^2);
 slope = sqrt(slope_y.^2 + slope_z.^2);
 
@@ -227,4 +231,48 @@ deflection = max(delta);
 
 %% Critical speed
 
-Nc = (30 / pi) * sqrt(32.2 / deflection);
+Nc = (30 / pi) * sqrt(32.2 * 12 / deflection);
+
+%% Graphs
+
+figure;
+
+subplot(2, 2, 1);
+hold on
+plot(x, F_y, 'LineWidth', 2);
+plot(x, F_z, 'LineWidth', 2);
+plot(x, F, 'LineWidth', 2);
+title("Shear")
+xlabel("Shaft Position (in)");
+ylabel("Shear (lbf)");
+legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
+
+subplot(2, 2, 2);
+hold on
+plot(x, M_y, 'LineWidth', 2);
+plot(x, M_z, 'LineWidth', 2);
+plot(x, M, 'LineWidth', 2);
+title("Moment")
+xlabel("Shaft Position (in)");
+ylabel("Moment (lbf-in)");
+legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
+
+subplot(2, 2, 3);
+hold on
+plot(x, delta_y, 'LineWidth', 2);
+plot(x, delta_z, 'LineWidth', 2);
+plot(x, delta, 'LineWidth', 2);
+title("Deflection")
+xlabel("Shaft Position (in)");
+ylabel("Deflection (in)");
+legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
+
+subplot(2, 2, 4);
+hold on
+plot(x, slope_y, 'LineWidth', 2);
+plot(x, slope_z, 'LineWidth', 2);
+plot(x, slope, 'LineWidth', 2);
+title("Slope")
+xlabel("Shaft Position (in)");
+ylabel("Slope (rad)")
+legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
