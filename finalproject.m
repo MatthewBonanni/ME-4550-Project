@@ -178,11 +178,13 @@ while tolerance >= .001
     Se = (ka * kb * kc * Se_prime);
 end
 
+% Soder_d = 2.632 in, therefore select standard 2 5/8" shaft
+
 %% Deflection - Integral Method
 
 % Fatigue
 
-I = (pi / 64) * Soder_d ^ 4;
+I = (pi / 64) * 2.625 ^ 4;
 
 s = 0.01; % step size
 
