@@ -169,9 +169,11 @@ end
 
 % Soder_d = 2.632 in, therefore select standard 2 5/8" shaft
 
+d_actual = 2.625;
+
 %% Deflection - Integral Method
 
-I = (pi / 64) * 2.625 ^ 4;
+I = (pi / 64) * d_actual ^ 4;
 
 s = 0.01; % step size
 
@@ -236,6 +238,44 @@ slope_B = slope(x == 36);
 
 Nc = (30 / pi) * sqrt(32.2 * 12 / deflection);
 
+%% Bearings Selection
+
+hp = 20;
+rpm = (5252 * hp) / T;
+L = (rpm * 60 * 2 * 200 * 10) / 10^6; % rpm * h/day * day/yr * 10 years
+
+lbf_to_N = 4.44822;
+
+% Convert loads from lbf to N
+O_y_N = O_y * lbf_to_N;
+O_z_N = O_z * lbf_to_N;
+
+B_y_N = B_y * lbf_to_N;
+B_z_N = B_z * lbf_to_N;
+
+Fr_O = sqrt(O_y_N^2 + O_z_N^2);
+Fa_O = 0;
+
+Fr_B = sqrt(B_y_N^2 + B_z_N^2);
+Fa_B = 0;
+
+% Purely radial loading, therefore
+X = 1;
+Y = 0;
+
+a = 10/3; % Select roller bearings, because no axial load
+
+V = 1; % Inner ring rotating
+
+Fe_O = X * V * Fr_O + Y * Fa_O;
+Fe_B = X * V * Fr_B + Y * Fa_B;
+
+C_O = Fe_O * L ^ (1/a);
+C_B = Fe_B * L ^ (1/a);
+
+% Therefore select 02 series bearings
+
+%{
 %% Graphs
 
 figure;
@@ -283,3 +323,4 @@ title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
 legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
+%}
