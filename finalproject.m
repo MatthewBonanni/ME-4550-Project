@@ -230,52 +230,10 @@ delta = sqrt(delta_y.^2 + delta_z.^2);
 slope = sqrt(slope_y.^2 + slope_z.^2);
 
 % Determine maximum deflection
-deflection = max(delta);
+delta_max = max(delta);
 slope_O = slope(x == 0);
 slope_B = slope(x == 36);
 
-%% Critical speed
-
-Nc = (30 / pi) * sqrt(32.2 * 12 / deflection);
-
-%% Bearings Selection
-
-hp = 20;
-rpm = (5252 * hp) / T;
-L = (rpm * 60 * 2 * 200 * 10) / 10^6; % rpm * h/day * day/yr * 10 years
-
-lbf_to_N = 4.44822;
-
-% Convert loads from lbf to N
-O_y_N = O_y * lbf_to_N;
-O_z_N = O_z * lbf_to_N;
-
-B_y_N = B_y * lbf_to_N;
-B_z_N = B_z * lbf_to_N;
-
-Fr_O = sqrt(O_y_N^2 + O_z_N^2);
-Fa_O = 0;
-
-Fr_B = sqrt(B_y_N^2 + B_z_N^2);
-Fa_B = 0;
-
-% Purely radial loading, therefore
-X = 1;
-Y = 0;
-
-a = 10/3; % Select roller bearings, because no axial load
-
-V = 1; % Inner ring rotating
-
-Fe_O = X * V * Fr_O + Y * Fa_O;
-Fe_B = X * V * Fr_B + Y * Fa_B;
-
-C_O = Fe_O * L ^ (1/a);
-C_B = Fe_B * L ^ (1/a);
-
-% Therefore select 02 series bearings
-
-%{
 %% Graphs
 
 figure;
@@ -323,4 +281,109 @@ title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
 legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
-%}
+
+%% Critical speed
+
+Nc = (30 / pi) * sqrt(32.2 * 12 / delta_max);
+
+%% Keys
+
+% calculating force of bearing
+F_bearing = T/(Soder_d/2);
+
+%shear of bearing
+tao_bearing = (.577*Sy)/3; 
+w1=5/8;
+h1=5/8;
+l_key_a=F_bearing/(tao_bearing*w1);
+
+%bearing stress (normal)
+
+syms l_key2_a
+solve(F_bearing/(.5*h1*l_key2_a));
+A_bearing=.5*h1*l_key2_a;
+sigma_bearing=F_bearing/A_bearing;
+
+%stress concentration - use end-mill keyseat
+Kf_key=2.14;
+Kfs_key=3.0;
+
+
+%%just for key A
+% finding new d using DE Soderberg eq
+Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%recalculate new kb
+    kb_keya = (.879 * Soder_d_keya^-.107);
+        Se = (ka * kb_keya * kc * Se_prime);
+        
+% finding new d using DE Soderberg eq
+Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%Check for yielding
+
+%Re-check key design and pick new key w and h if necessary
+%Resolve for length of key
+solve(F_bearing/(.5*h1*l_key2_a));
+
+
+%%repeat for key at C
+M_C=0;
+% finding new d using DE Soderberg eq
+Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%recalculate new kb
+    kb_keyc = (.879 * Soder_d_keyc^-.107);
+        Se = (ka * kb_keyc * kc * Se_prime);
+        
+% finding new d using DE Soderberg eq
+Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%Check for yielding
+
+
+%Re-check key design and pick new key w and h if necessary
+
+%Resolve for length of key
+solve(F_bearing/(.5*h1*l_key2_c));
+
+%% Bearings Selection
+
+hp = 20;
+rpm = (5252 * hp) / T;
+L = (rpm * 60 * 2 * 200 * 10) / 10^6; % rpm * h/day * day/yr * 10 years
+
+lbf_to_N = 4.44822;
+
+% Convert loads from lbf to N
+O_y_N = O_y * lbf_to_N;
+O_z_N = O_z * lbf_to_N;
+
+B_y_N = B_y * lbf_to_N;
+B_z_N = B_z * lbf_to_N;
+
+Fr_O = sqrt(O_y_N^2 + O_z_N^2);
+Fa_O = 0;
+
+Fr_B = sqrt(B_y_N^2 + B_z_N^2);
+Fa_B = 0;
+
+% Purely radial loading, therefore
+X = 1;
+Y = 0;
+
+a = 10/3; % Select roller bearings, because no axial load
+
+V = 1; % Inner ring rotating
+
+Fe_O = X * V * Fr_O + Y * Fa_O;
+Fe_B = X * V * Fr_B + Y * Fa_B;
+
+C_O = Fe_O * L ^ (1/a);
+C_B = Fe_B * L ^ (1/a);
+
+% Therefore select 02 series bearings
