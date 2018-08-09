@@ -283,3 +283,66 @@ title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
 legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
+
+%% Keys
+
+% calculating force of bearing
+F_bearing = T/(d_actual/2);
+
+%shear of bearing
+tao_bearing = (.577*Sy)/3; 
+w1=5/8;
+h1=5/8;
+l_key_a=F_bearing/(tao_bearing*w1);
+
+%bearing stress (normal)
+solve(F_bearing/(.5*h1*l_key2_a));
+A_bearing=.5*h1*l_key2_a;
+sigma_bearing=F_bearing/A_bearing;
+
+%stress concentration - use end-mill keyseat
+Kf_key=2.14;
+Kfs_key=3.0;
+
+
+%%just for key A
+% finding new d using DE Soderberg eq
+Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%recalculate new kb
+    kb_keya = (.879 * Soder_d_keya^-.107)
+        Se = (ka * kb_keya * kc * Se_prime);
+        
+% finding new d using DE Soderberg eq
+Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%Check for yielding
+
+%Re-check key design and pick new key w and h if necessary
+%Resolve for length of key
+solve(F_bearing/(.5*h1*l_key2_a));
+
+
+%%repeat for key at C
+M_C=0
+% finding new d using DE Soderberg eq
+Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%recalculate new kb
+    kb_keyc = (.879 * Soder_d_keyc^-.107)
+        Se = (ka * kb_keyc * kc * Se_prime);
+        
+% finding new d using DE Soderberg eq
+Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
+        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
+    
+%Check for yielding
+
+
+%Re-check key design and pick new key w and h if necessary
+
+%Resolve for length of key
+solve(F_bearing/(.5*h1*l_key2_c);
