@@ -228,13 +228,13 @@ delta = sqrt(delta_y.^2 + delta_z.^2);
 slope = sqrt(slope_y.^2 + slope_z.^2);
 
 % Determine maximum deflection
-deflection = max(delta);
+delta_max = max(delta);
 slope_O = slope(x == 0);
 slope_B = slope(x == 36);
 
 %% Critical speed
 
-Nc = (30 / pi) * sqrt(32.2 * 12 / deflection);
+Nc = (30 / pi) * sqrt(32.2 * 12 / delta_max);
 
 %% Graphs
 
@@ -287,7 +287,7 @@ legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
 %% Keys
 
 % calculating force of bearing
-F_bearing = T/(d_actual/2);
+F_bearing = T/(Soder_d/2);
 
 %shear of bearing
 tao_bearing = (.577*Sy)/3; 
@@ -296,6 +296,8 @@ h1=5/8;
 l_key_a=F_bearing/(tao_bearing*w1);
 
 %bearing stress (normal)
+
+syms l_key2_a
 solve(F_bearing/(.5*h1*l_key2_a));
 A_bearing=.5*h1*l_key2_a;
 sigma_bearing=F_bearing/A_bearing;
@@ -311,7 +313,7 @@ Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 *
         3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
     
 %recalculate new kb
-    kb_keya = (.879 * Soder_d_keya^-.107)
+    kb_keya = (.879 * Soder_d_keya^-.107);
         Se = (ka * kb_keya * kc * Se_prime);
         
 % finding new d using DE Soderberg eq
@@ -326,13 +328,13 @@ solve(F_bearing/(.5*h1*l_key2_a));
 
 
 %%repeat for key at C
-M_C=0
+M_C=0;
 % finding new d using DE Soderberg eq
 Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
         3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
     
 %recalculate new kb
-    kb_keyc = (.879 * Soder_d_keyc^-.107)
+    kb_keyc = (.879 * Soder_d_keyc^-.107);
         Se = (ka * kb_keyc * kc * Se_prime);
         
 % finding new d using DE Soderberg eq
@@ -345,4 +347,4 @@ Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 *
 %Re-check key design and pick new key w and h if necessary
 
 %Resolve for length of key
-solve(F_bearing/(.5*h1*l_key2_c);
+solve(F_bearing/(.5*h1*l_key2_c));
