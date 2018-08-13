@@ -363,7 +363,6 @@ while tolerance >= .001
         3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
     
     d_keyc = d_keyc((d_keyc > 0) & imag(d_keyc) == 0); % Select real, positive solution
-    disp(d_keyc);
     tolerance = abs(((d_keyc - d_keyc_next) / d_keyc));
     d_keyc_next = d_keyc;
     kb = (.879 * d_keyc^-.107);
@@ -430,6 +429,3 @@ Fe_B = X * V * Fr_B + Y * Fa_B;
 
 C_O = Fe_O * L ^ (1/a);
 C_B = Fe_B * L ^ (1/a);
-
-% Therefore select 02 series bearings
-
