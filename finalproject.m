@@ -234,6 +234,7 @@ delta_max = max(delta);
 slope_O = slope(x == 0);
 slope_B = slope(x == 36);
 
+%{
 %% Graphs
 
 figure;
@@ -281,6 +282,7 @@ title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
 legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
+%}
 
 %% Critical speed
 
@@ -288,68 +290,111 @@ Nc = (30 / pi) * sqrt(32.2 * 12 / delta_max);
 
 %% Keys
 
-% calculating force of bearing
-F_bearing = T/(Soder_d/2);
+% Select standard key based on 2.625" shaft diameter
+w1 = 5/8;
+h1 = 5/8;
 
-%shear of bearing
-tao_bearing = (.577*Sy)/3; 
-w1=5/8;
-h1=5/8;
-l_key_a=F_bearing/(tao_bearing*w1);
+% Force at the key
+F_key = T / (Soder_d / 2);
 
-%bearing stress (normal)
+% Acceptable stresses at key
+sigma_key = Sy / n_desired;
+tao_key = (.577 * Sy) / n_desired;
 
-syms l_key2_a
-solve(F_bearing/(.5*h1*l_key2_a));
-A_bearing=.5*h1*l_key2_a;
-sigma_bearing=F_bearing/A_bearing;
+% Length based on stresses
+l_a_normal = F_key / (0.5 * h1 * sigma_key);
+l_a_shear = F_key / (tao_key * w1);
 
-%stress concentration - use end-mill keyseat
-Kf_key=2.14;
-Kfs_key=3.0;
+% Stress concentration - use end-mill keyseat
+Kf_key = 2.14;
+Kfs_key = 3.0;
 
+%% New shaft based on concentrations at key A
 
-%%just for key A
-% finding new d using DE Soderberg eq
-Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
+tolerance = 1;
+d_keya_next = 6; % Initial diameter assumption
+
+while tolerance >= .001
+    d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
         3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
     
-%recalculate new kb
-    kb_keya = (.879 * Soder_d_keya^-.107);
-        Se = (ka * kb_keya * kc * Se_prime);
-        
-% finding new d using DE Soderberg eq
-Soder_d_keya = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_A_tot)^2 + ...
+    d_keya = d_keya((d_keya > 0) & imag(d_keya) == 0); % Select real, positive solution
+    tolerance = abs(((d_keya - d_keya_next) / d_keya));
+    d_keya_next = d_keya;
+    kb = (.879 * d_keya^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
+
+% Check for yielding
+
+sigma_a_prime = Kf_key * 32 * M_A_tot / (pi * d_keya^3);
+sigma_m_prime = sqrt(3) * Kfs_key * 16 * T_m / (pi * d_keya^3);
+
+sigma_max = sigma_a_prime + sigma_m_prime;
+
+n_keya = Sy / sigma_max;
+
+% Re-check key design and pick new key w and h if necessary
+% Select standard key based on 3.32" shaft diameter
+
+w1 = 7/8;
+h1 = 7/8;
+
+% Force at the key
+F_key = T / (d_keya / 2);
+
+% Acceptable stresses at key
+sigma_key = Sy / n_desired;
+tao_key = (.577 * Sy) / n_desired;
+
+% Length based on stresses
+l_a_normal = F_key / (0.5 * h1 * sigma_key);
+l_a_shear = F_key / (tao_key * w1);
+
+%% New shaft based on concentrations at key C
+
+M_C_tot = M(x == 46);
+
+tolerance = 1;
+d_keyc_next = 6; % Initial diameter assumption
+
+while tolerance >= .001
+    d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C_tot)^2 + ...
         3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_m)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
     
-%Check for yielding
+    d_keyc = d_keyc((d_keyc > 0) & imag(d_keyc) == 0); % Select real, positive solution
+    disp(d_keyc);
+    tolerance = abs(((d_keyc - d_keyc_next) / d_keyc));
+    d_keyc_next = d_keyc;
+    kb = (.879 * d_keyc^-.107);
+    Se = (ka * kb * kc * Se_prime);
+end
 
-%Re-check key design and pick new key w and h if necessary
-%Resolve for length of key
-solve(F_bearing/(.5*h1*l_key2_a));
+% Check for yielding
 
+sigma_a_prime = Kf_key * 32 * M_C_tot / (pi * d_keyc^3);
+sigma_m_prime = sqrt(3) * Kfs_key * 16 * T_m / (pi * d_keyc^3);
 
-%%repeat for key at C
-M_C=0;
-% finding new d using DE Soderberg eq
-Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
-        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
-    
-%recalculate new kb
-    kb_keyc = (.879 * Soder_d_keyc^-.107);
-        Se = (ka * kb_keyc * kc * Se_prime);
-        
-% finding new d using DE Soderberg eq
-Soder_d_keyc = double(solve(((16 * n_desired / (pi * d^3)) * ((Se^-1) * sqrt(4 * (Kf_key * M_C)^2 + ...
-        3 * (Kfs_key * T_a)^2) + (Sy^-1) * sqrt(4 * (Kf_key * M_C)^2 + 3 * (Kfs_key * T_m)^2))) - 1));
-    
-%Check for yielding
+sigma_max = sigma_a_prime + sigma_m_prime;
 
+n_keyc = Sy / sigma_max;
 
-%Re-check key design and pick new key w and h if necessary
+% Re-check key design and pick new key w and h if necessary
+% Select standard key based on 3.32" shaft diameter
 
-%Resolve for length of key
-solve(F_bearing/(.5*h1*l_key2_c));
+w1 = 7/8;
+h1 = 7/8;
+
+% Force at the key
+F_key = T / (d_keya / 2);
+
+% Acceptable stresses at key
+sigma_key = Sy / n_desired;
+tao_key = (.577 * Sy) / n_desired;
+
+% Length based on stresses
+l_c_normal = F_key / (0.5 * h1 * sigma_key);
+l_c_shear = F_key / (tao_key * w1);
 
 %% Bearings Selection
 
@@ -387,3 +432,4 @@ C_O = Fe_O * L ^ (1/a);
 C_B = Fe_B * L ^ (1/a);
 
 % Therefore select 02 series bearings
+
