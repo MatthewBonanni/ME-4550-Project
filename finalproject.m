@@ -439,46 +439,51 @@ Wt = .134; % Thickness of the washer
 Lb = 4; % Length of the bolt
 bh = 2.125; % Height of bearing housing
 SP = .5; % Steel plate thickness
-ECI = 14.5*10^6; % Given by book
+ECI = 14.5 * 10^6; % Given by book
 
 PS = 120000; % Proof strength for the bolts of Grade 8 Steel
 Se = 23200; % Endurance Strength of the bolts 
-Sut = 150000;  % Ultimate strength for the bolts
+Sut = 150000;  % Ultimate strength of the bolts
 
-HL = (Wt +bh + SP)/2; % Dividing our Frustra into two
-Dia_F1 = cosd(30)*(HL) + 1.125; % Dia of First Frustrum
-Dia_F2 = (Dia_F1/HL)*(.8795); 
+HL = (Wt + bh + SP) / 2; % Dividing our Frustra into two
+Dia_F1 = cosd(30)* HL + 1.125; % Dia of First Frustrum
+Dia_F2 = (Dia_F1 / HL) * .8795; 
 
-K1 = .5744 *pi*ECI*d / ((log(((1.155*(HL))+Wb-d)*(Wb+d))/ ((1.155*(HL)+Wb+d)*(Wb-d))));
-K2 = .5744 *pi*ECI*d / ((log((((1.155*(Wt+bh-HL))+Dia_F2-d)*(Dia_F2+d)) / ((1.155*((Wt+bh-HL)+Dia_F2+d))*(Dia_F2-d)))));
-K3 = .5744 *pi*E*d / ((log(((1.155*(2*HL-Wt+bh-HL))+Wb-d)*(Wb+d))/ ((1.155*((2*HL-Wt+bh-HL)+Wb+d)*(Wb-d)))));
-Km = (((1/K1) + (1/K2) + (1/K3))^-1);
+K1 = .5744 * pi * ECI * d / ((log(((1.155 * HL) + Wb - d) * (Wb + d)) / ...
+    ((1.155 * HL + Wb + d) * (Wb - d))));
+K2 = .5744 * pi * ECI * d / ((log((((1.155 * (Wt + bh - HL)) + Dia_F2 - d) ...
+    * (Dia_F2 + d)) / ((1.155 * ((Wt + bh - HL) + Dia_F2 + d)) * (Dia_F2 - d)))));
+K3 = .5744 * pi * E * d / ((log(((1.155 * (2 * HL - Wt + bh - HL)) + Wb - d) ...
+    * (Wb + d)) / ((1.155 * ((2 * HL - Wt + bh - HL) + Wb + d) * (Wb - d)))));
+Km = (((1 / K1) + (1 / K2) + (1 / K3))^-1);
 
-Ad = pi*(.75^2)/4; % Bolt Area
+Ad = pi * .75^2  / 4; % Bolt Area
 At = 0.334; % Transverse area from Table 8-1
-l_squeeze = Lb-SP-bh;  % Length squeezed in between bolts
-Kb = E*At*Ad / ((At*2.25) + (Ad*1.75)); % Stiffness of bolt 
+l_squeeze = Lb - SP - bh;  % Length squeezed in between bolts
+Kb = E * At * Ad / ((At * 2.25) + (Ad * 1.75)); % Stiffness of bolt 
 
-%Km =.5774*pi*E*d / (2*ln(5*(.5774*l_squeeze+.5*d)/(.5774*l_squeeze+2.5*d)))
+%Km = .5774 * pi * E * d / (2 * ln(5 * (.5774 * l_squeeze + .5 * d) / (.5774 * l_squeeze + 2.5 * d)))
 
-c = Kb / (Kb+Km); 
+c = Kb / (Kb + Km); 
 
 % Force on the bolt
-Pb_O = (O_y*-1)* c; 
-Pm_O = (1-c)*O_y;
+O_y_abs = abs(O_y);
 
-Fi = .9*At*PS; % Suggested pre-load for bolt assuming semi-permanent status 
-Np = PS*At/ ((c*O_y)+Fi); % Static factor of safety 
-Sigma_amp = c*(O_y)/(2*At); % Amplitudal stress
-Sigma_mid = Sigma_amp + (Fi/At); % Midline stress
-Nf = Se*(Sut-(Fi/At))/ (Sigma_amp *(Sut+Se)); % Fatigue safety using Goodman method
+Pb_O = O_y_abs * c / 4;
+Pm_O = (1 - c) * O_y_abs / 4;
+
+Fi = .75 * At * PS; % Suggested pre-load for bolt assuming semi-permanent status 
+Np = PS * At / ((c * O_y_abs) + Fi); % Static factor of safety 
+Sigma_amp = (c * O_y_abs) / (2 * At); % Amplitudal stress
+Sigma_mid = Sigma_amp + (Fi / At); % Midline stress
+Nf = Se * (Sut - (Fi / At)) / (Sigma_amp * (Sut + Se)); % Fatigue safety using Goodman method
 
 % Load Factor Calculations
-Nl= (PS*At-Fi)/(c*O_y);
+Nl= (PS * At - Fi) / (c * O_y_abs);
 
 % Separation Factor
-No = Fi / ((1-c)*O_y);
+No = Fi / ((1 - c) * O_y_abs);
 
 % Max Transverse Shear at Bolts
-TS_O = (.25*4*O_z) / (3*pi*(.75^2)/4);
-TS_B = (.25*4*B_z) / (3*pi*(.75^2)/4);
+TS_O = (.25 * 4 * O_z) / (3*pi * .75^2 / 4);
+TS_B = (.25 * 4 * B_z) / (3*pi * .75^2 / 4);
