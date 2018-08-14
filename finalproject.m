@@ -429,3 +429,83 @@ Fe_B = X * V * Fr_B + Y * Fa_B;
 
 C_O = Fe_O * L ^ (1/a);
 C_B = Fe_B * L ^ (1/a);
+
+%% Bolt Calculations
+
+d = .75 %diameter of bolts
+
+Wb = 1.125  %width of the bolt
+
+Wt = .134 %thickness of the washer
+
+Lb = 4 % length of the bolt
+
+bh = 2.125 %height of bearing housing
+
+SP = .5 % Steel plate
+
+ECI = 14.5*10^6 %Given by book
+
+HL = (Wt +bh + SP)/2    %Dividing our Frustrums into two
+
+Dia_F1 = cosd(30)*(HL) + 1.125 %Dia of First Frustra
+
+Dia_F2 = (Dia_F1/HL)*(.8795) 
+
+
+K1 = .5744 *pi*ECI*d / ((log(((1.155*(HL))+Wb-d)*(Wb+d))/ ((1.155*(HL)+Wb+d)*(Wb-d))))
+
+K2 = .5744 *pi*ECI*d / ((log((((1.155*(Wt+bh-HL))+Dia_F2-d)*(Dia_F2+d)) / ((1.155*((Wt+bh-HL)+Dia_F2+d))*(Dia_F2-d)))))
+
+K3 = .5744 *pi*E*d / ((log(((1.155*(2*HL-Wt+bh-HL))+Wb-d)*(Wb+d))/ ((1.155*((2*HL-Wt+bh-HL)+Wb+d)*(Wb-d)))))
+
+
+Km = (((1/K1) + (1/K2) + (1/K3))^-1)
+
+Ad = pi*(.75^2)/4   %area of the bolt
+
+At = 0.334 % transverse area from Table 8-1
+
+l_squeeze = Lb-SP-bh;  %length squeezed in between bolts
+
+Kb = E*At*Ad / ((At*2.25) + (Ad*1.75))   %stiffness of bolt 
+
+
+%Km =.5774*pi*E*d / (2*ln(5*(.5774*l_squeeze+.5*d)/(.5774*l_squeeze+2.5*d)))
+
+c = Kb / (Kb+Km); 
+
+Pb_O = (O_y*-1)* c %Force on the bolt  
+
+Pm_O = (1-c)*O_y;
+
+PS = 120,000 %proof strength for the bolts of Grade 8 Steel
+
+Fi = .9*At*PS;    %Suggested pre-load for bolt assuming semi-permanent status 
+
+Np = PS*At/ ((c*O_y)+Fi)  %static factor of safety 
+
+
+Sigma_amp = c*(O_y)/(2*At)     %Amplitudal stress
+
+Sigma_mid = Sigma_amp + (Fi/At)     %Midline stress
+
+Se = 23200; % Endurance Strength of the bolts 
+
+Sut = 150,000;  % Ultimate strength for the bolts
+
+Nf = Se*(Sut-(Fi/At))/ (Sigma_amp *(Sut+Se))  %F.O.S. for fatigue using Goodman
+
+
+% Load Factor Calculations
+
+Nl= (PS*At-Fi)/(c*O_y)
+
+% Seperation Factor
+
+No = Fi / ((1-c)*O_y)
+
+
+TS_O = (.25*4*O_z) / (3*pi*(.75^2)/4) % Max transverse shear per bolt
+
+TS_B = (.25*4*B_z) / (3*pi*(.75^2)/4) % Max transverse shear per bolt
