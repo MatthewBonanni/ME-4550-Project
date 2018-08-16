@@ -487,3 +487,32 @@ No = Fi / ((1 - c) * O_y_abs);
 % Max Transverse Shear at Bolts
 TS_O = (.25 * 4 * O_z) / (3*pi * .75^2 / 4);
 TS_B = (.25 * 4 * B_z) / (3*pi * .75^2 / 4);
+
+%% Gear Calculations
+
+St = 22000; %psi for Steel, flame hardened type A Grade 1
+Yn = .95;
+Kt = 1;
+Kr = 1; % for 99% reliability
+sigma_gears = ((St * Yn/ (Kt * Kr)) /n_desired);
+Qv = 7;
+
+%Gear 3:
+Kv3 = 1.4;
+Wt3 = A_y;
+Pd3 = 1;
+teethnum3 = 24;
+Y3 = .337;
+
+%Face width for gear 3:
+Face3 = Kv3 * Wt3 * Pd3 / (sigma_gears * Y3);
+
+%Gear 4:
+Kv4 = 1.2;
+Wt4 = C_z;
+Pd4 = 2;
+teethnum4 = 20;
+Y4 = .322;
+
+%Face width for gear 4:
+Face4 = Kv4 * Wt4 * Pd4 / (sigma_gears * Y4);
