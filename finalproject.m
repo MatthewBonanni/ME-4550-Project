@@ -398,7 +398,7 @@ l_c_shear = F_key / (tao_key * w1);
 %% Bearings Selection
 
 hp = 20;
-rpm = (5252 * hp) / T;
+rpm = (5252 * hp)*12 / T;
 L = (rpm * 60 * 2 * 200 * 10) / 10^6; % rpm * h/day * day/yr * 10 years
 
 lbf_to_N = 4.44822;
