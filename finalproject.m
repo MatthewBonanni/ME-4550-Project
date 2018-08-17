@@ -173,8 +173,6 @@ d_actual = 2.625;
 
 %% Deflection - Integral Method
 
-I = (pi / 64) * d_actual ^ 4;
-
 s = 0.01; % step size
 
 % Determine segment domains
@@ -184,6 +182,16 @@ x_BC = 36+s:s:46;
 
 % Combined domain
 x = [x_OA x_AB x_BC];
+
+% Shaft diameter
+
+d_OA = 4.5 + zeros(size(x_OA));
+d_AB = 3 + zeros(size(x_AB));
+d_BC = 3.5 + zeros(size(x_BC));
+
+d_segmented = [d_OA d_AB d_BC];
+
+I = (pi / 64) .* d_segmented .^ 4;
 
 % Calculate piecewise forces
 Fy_OA = O_y + zeros(size(x_OA));
@@ -198,30 +206,20 @@ Fz_BC = O_z - A_z + B_z + zeros(size(x_BC));
 F_y = [Fy_OA Fy_AB Fy_BC];
 F_z = [Fz_OA Fz_AB Fz_BC];
 
-% Integrate to determine moments across the shaft
 M_y = cumtrapz(x, F_z);
 M_z = cumtrapz(x, F_y);
 
-% First integral of moment
-int1M_y = cumtrapz(x, M_y);
-int1M_z = cumtrapz(x, M_z);
+A_y = cumtrapz(x, cumtrapz(x, M_y ./ I));
+A_z = cumtrapz(x, cumtrapz(x, M_z ./ I));
 
-% Second integral of moment
-int2M_y = cumtrapz(x, int1M_y);
-int2M_z = cumtrapz(x, int1M_z);
+delta_y = (1 / E) * (((A_y(x == 36) .* x) / 36) - A_y);
+delta_z = (1 / E) * (((A_z(x == 36) .* x) / 36) - A_z);
 
-% Calculate constants of integration based on
-% delta(0) = 0, delta(36) = 0
-c1_y = - int2M_y(x == 36) / (36 * E * I);
-c1_z = - int2M_z(x == 36) / (36 * E * I);
+slope_y = diff(delta_y) ./ s;
+slope_z = diff(delta_z) ./ s;
 
-% Calculate deflection curves
-delta_y = (int2M_y / (E * I)) + c1_y * x;
-delta_z = (int2M_z / (E * I)) + c1_z * x;
-
-% Calculate slope curves
-slope_y = (int1M_y / (E * I)) + c1_y;
-slope_z = (int1M_z / (E * I)) + c1_z;
+slope_y = [slope_y(1) slope_y];
+slope_z = [slope_z(1) slope_z];
 
 % Calculate magnitudes of all curves
 F = sqrt(F_y.^2 + F_z.^2);
@@ -231,10 +229,11 @@ slope = sqrt(slope_y.^2 + slope_z.^2);
 
 % Determine maximum deflection
 delta_max = max(delta);
+
+% Other important values
 slope_O = slope(x == 0);
 slope_B = slope(x == 36);
 
-%{
 %% Graphs
 
 figure;
@@ -282,7 +281,14 @@ title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
 legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
-%}
+
+figure;
+
+hold on
+plot(x, d / 2, 'k', 'LineWidth', 2);
+plot(x, -d / 2, 'k', 'LineWidth', 2);
+axis equal
+title("Shaft Size");
 
 %% Critical speed
 
