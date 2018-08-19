@@ -1,4 +1,6 @@
-% Design and analysis script for ME 4550 final design project
+% Design and analysis of a segmented shaft featuring two gears and two 
+% bearings. This work is completed in satisfaction of the requirements of 
+% the ME 4550 final design project.
 %
 % Matthew Bonanni, Nicolas Iacovelli, Adrian Kombe, Ryan Loehr, Becca Sung
 
@@ -98,7 +100,7 @@ Se_prime = Sut * .5;
 ka_a = 2.7;
 ka_b = -.265;
 ka = (ka_a)*((Sut/1000)^(ka_b));
-kb = .9; % guess for fist iteration
+kb = .9; % guess for first iteration
 kc = 1; % 1 for combined loading
 
 Se = (ka * kb * kc * Se_prime);
@@ -207,15 +209,19 @@ Fz_BC = O_z - A_z + B_z + zeros(size(x_BC));
 F_y = [Fy_OA Fy_AB Fy_BC];
 F_z = [Fz_OA Fz_AB Fz_BC];
 
+% Integrate to determine moments
 M_y = cumtrapz(x, F_z);
 M_z = cumtrapz(x, F_y);
 
+% Expression A for convenience
 A_y = cumtrapz(x, cumtrapz(x, M_y ./ I));
 A_z = cumtrapz(x, cumtrapz(x, M_z ./ I));
 
+% Calculate deflection
 delta_y = (1 / E) * (((A_y(x == 36) .* x) / 36) - A_y);
 delta_z = (1 / E) * (((A_z(x == 36) .* x) / 36) - A_z);
 
+% Calculate slope
 slope_y = diff(delta_y) ./ s;
 slope_z = diff(delta_z) ./ s;
 
@@ -227,6 +233,8 @@ F = sqrt(F_y.^2 + F_z.^2);
 M = sqrt(M_y.^2 + M_z.^2);
 delta = sqrt(delta_y.^2 + delta_z.^2);
 slope = sqrt(slope_y.^2 + slope_z.^2);
+
+delta_max = max(delta);
 
 % Deflection at gears
 delta_A = delta(x == 20);
