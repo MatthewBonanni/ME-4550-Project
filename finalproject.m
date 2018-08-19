@@ -274,9 +274,9 @@ plot(x, F_y, 'LineWidth', 2);
 plot(x, F_z, 'LineWidth', 2);
 plot(x, F, 'LineWidth', 2);
 hline(0, 'k--');
-vline(20, 'k--');
-vline(36, 'k--');
-vline(46, 'k--');
+vline(20, 'k--', 'A');
+vline(36, 'k--', 'B');
+vline(46, 'k--', 'C');
 title("Shear")
 xlabel("Shaft Position (in)");
 ylabel("Shear (lbf)");
@@ -288,9 +288,9 @@ plot(x, M_y, 'LineWidth', 2);
 plot(x, M_z, 'LineWidth', 2);
 plot(x, M, 'LineWidth', 2);
 hline(0, 'k--');
-vline(20, 'k--');
-vline(36, 'k--');
-vline(46, 'k--');
+vline(20, 'k--', 'A');
+vline(36, 'k--', 'B');
+vline(46, 'k--', 'C');
 title("Moment")
 xlabel("Shaft Position (in)");
 ylabel("Moment (lbf-in)");
@@ -302,9 +302,9 @@ plot(x, delta_y, 'LineWidth', 2);
 plot(x, delta_z, 'LineWidth', 2);
 plot(x, delta, 'LineWidth', 2);
 hline(0, 'k--');
-vline(20, 'k--');
-vline(36, 'k--');
-vline(46, 'k--');
+vline(20, 'k--', 'A');
+vline(36, 'k--', 'B');
+vline(46, 'k--', 'C');
 title("Deflection")
 xlabel("Shaft Position (in)");
 ylabel("Deflection (in)");
@@ -316,9 +316,9 @@ plot(x, slope_y, 'LineWidth', 2);
 plot(x, slope_z, 'LineWidth', 2);
 plot(x, slope, 'LineWidth', 2);
 hline(0, 'k--');
-vline(20, 'k--');
-vline(36, 'k--');
-vline(46, 'k--');
+vline(20, 'k--', 'A');
+vline(36, 'k--', 'B');
+vline(46, 'k--', 'C');
 title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
@@ -330,9 +330,9 @@ hold on
 plot(x, d_segmented / 2, 'k', 'LineWidth', 2);
 plot(x, -d_segmented / 2, 'k', 'LineWidth', 2);
 axis equal
-vline(20, 'k--');
-vline(36, 'k--');
-vline(46, 'k--');
+vline(20, 'k--', 'A');
+vline(36, 'k--', 'B');
+vline(46, 'k--', 'C');
 title("Shaft Size");
 
 %% Critical speed
