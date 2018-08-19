@@ -176,20 +176,21 @@ d_actual = 2.625;
 s = 0.01; % step size
 
 % Determine segment domains
-x_OA = 0:s:20;
-x_AB = 20+s:s:36;
-x_BC = 36+s:s:46;
+x_OA = 0 : s : 20;
+x_AB = 20+s : s : 36;
+x_BC = 36+s : s : 46;
 
 % Combined domain
 x = [x_OA x_AB x_BC];
 
 % Shaft diameter
 
-d_OA = 4.5 + zeros(size(x_OA));
-d_AB = 3 + zeros(size(x_AB));
-d_BC = 3.5 + zeros(size(x_BC));
 
-d_segmented = [d_OA d_AB d_BC];
+d_1 = 4.25 + zeros(size(0 : s : 15.5));
+d_2 = 5.25 + zeros(size(15.5+s : s : 25.5));
+d_3 = 4.25 + zeros(size(25.5+s : s : 46));
+
+d_segmented = [d_1 d_2 d_3];
 
 I = (pi / 64) .* d_segmented .^ 4;
 
@@ -227,12 +228,39 @@ M = sqrt(M_y.^2 + M_z.^2);
 delta = sqrt(delta_y.^2 + delta_z.^2);
 slope = sqrt(slope_y.^2 + slope_z.^2);
 
-% Determine maximum deflection
-delta_max = max(delta);
+% Deflection at gears
+delta_A = delta(x == 20);
+delta_C = delta(x == 46);
 
-% Other important values
+% Slope at bearings
 slope_O = slope(x == 0);
 slope_B = slope(x == 36);
+
+% Verify deflection and slope within acceptable limits
+
+if slope_O <= 0.001
+    disp("Pass O");
+else
+    disp("Fail O");
+end
+
+if delta_A <= 0.005
+    disp("Pass A");
+else
+    disp("Fail A");
+end
+
+if slope_B <= 0.001
+    disp("Pass B");
+else
+    disp("Fail B");
+end
+
+if delta_C <= 0.005
+    disp("Pass C");
+else
+    disp("Fail C");
+end
 
 %% Graphs
 
@@ -245,7 +273,10 @@ hold on
 plot(x, F_y, 'LineWidth', 2);
 plot(x, F_z, 'LineWidth', 2);
 plot(x, F, 'LineWidth', 2);
-fplot(@(x) 0, [0 46], 'k--');
+hline(0, 'k--');
+vline(20, 'k--');
+vline(36, 'k--');
+vline(46, 'k--');
 title("Shear")
 xlabel("Shaft Position (in)");
 ylabel("Shear (lbf)");
@@ -256,7 +287,10 @@ hold on
 plot(x, M_y, 'LineWidth', 2);
 plot(x, M_z, 'LineWidth', 2);
 plot(x, M, 'LineWidth', 2);
-fplot(@(x) 0, [0 46], 'k--');
+hline(0, 'k--');
+vline(20, 'k--');
+vline(36, 'k--');
+vline(46, 'k--');
 title("Moment")
 xlabel("Shaft Position (in)");
 ylabel("Moment (lbf-in)");
@@ -267,7 +301,10 @@ hold on
 plot(x, delta_y, 'LineWidth', 2);
 plot(x, delta_z, 'LineWidth', 2);
 plot(x, delta, 'LineWidth', 2);
-fplot(@(x) 0, [0 46], 'k--');
+hline(0, 'k--');
+vline(20, 'k--');
+vline(36, 'k--');
+vline(46, 'k--');
 title("Deflection")
 xlabel("Shaft Position (in)");
 ylabel("Deflection (in)");
@@ -278,7 +315,10 @@ hold on
 plot(x, slope_y, 'LineWidth', 2);
 plot(x, slope_z, 'LineWidth', 2);
 plot(x, slope, 'LineWidth', 2);
-fplot(@(x) 0, [0 46], 'k--');
+hline(0, 'k--');
+vline(20, 'k--');
+vline(36, 'k--');
+vline(46, 'k--');
 title("Slope")
 xlabel("Shaft Position (in)");
 ylabel("Slope (rad)")
@@ -290,6 +330,9 @@ hold on
 plot(x, d_segmented / 2, 'k', 'LineWidth', 2);
 plot(x, -d_segmented / 2, 'k', 'LineWidth', 2);
 axis equal
+vline(20, 'k--');
+vline(36, 'k--');
+vline(46, 'k--');
 title("Shaft Size");
 
 %% Critical speed
