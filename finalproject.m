@@ -236,6 +236,8 @@ slope_B = slope(x == 36);
 
 %% Graphs
 
+warning('off', 'all');
+
 figure;
 
 subplot(2, 2, 1);
@@ -285,8 +287,8 @@ legend({"y-direction", "z-direction", "total"}, 'Location', 'best');
 figure;
 
 hold on
-plot(x, d / 2, 'k', 'LineWidth', 2);
-plot(x, -d / 2, 'k', 'LineWidth', 2);
+plot(x, d_segmented / 2, 'k', 'LineWidth', 2);
+plot(x, -d_segmented / 2, 'k', 'LineWidth', 2);
 axis equal
 title("Shaft Size");
 
