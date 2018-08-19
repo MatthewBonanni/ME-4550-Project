@@ -186,9 +186,9 @@ x = [x_OA x_AB x_BC];
 % Shaft diameter
 
 
-d_1 = 4.25 + zeros(size(0 : s : 15.5));
-d_2 = 5.25 + zeros(size(15.5+s : s : 25.5));
-d_3 = 4.25 + zeros(size(25.5+s : s : 46));
+d_1 = 4.25 + zeros(size(0 : s : 15));
+d_2 = 5.25 + zeros(size(15+s : s : 25));
+d_3 = 4.25 + zeros(size(25+s : s : 46));
 
 d_segmented = [d_1 d_2 d_3];
 
