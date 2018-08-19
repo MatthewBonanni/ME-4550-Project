@@ -339,28 +339,11 @@ title("Shaft Size");
 
 Nc = (30 / pi) * sqrt(32.2 * 12 / delta_max);
 
-%% Keys
-
-% Select standard key based on 2.625" shaft diameter
-w1 = 5/8;
-h1 = 5/8;
-
-% Force at the key
-F_key = T / (Soder_d / 2);
-
-% Acceptable stresses at key
-sigma_key = Sy / n_desired;
-tao_key = (.577 * Sy) / n_desired;
-
-% Length based on stresses
-l_a_normal = F_key / (0.5 * h1 * sigma_key);
-l_a_shear = F_key / (tao_key * w1);
+%% New shaft based on concentrations at key A
 
 % Stress concentration - use end-mill keyseat
 Kf_key = 2.14;
 Kfs_key = 3.0;
-
-%% New shaft based on concentrations at key A
 
 tolerance = 1;
 d_keya_next = 6; % Initial diameter assumption
@@ -401,6 +384,8 @@ tao_key = (.577 * Sy) / n_desired;
 % Length based on stresses
 l_a_normal = F_key / (0.5 * h1 * sigma_key);
 l_a_shear = F_key / (tao_key * w1);
+
+l_a = max(l_a_normal, l_a_shear);
 
 %% New shaft based on concentrations at key C
 
@@ -445,6 +430,46 @@ tao_key = (.577 * Sy) / n_desired;
 % Length based on stresses
 l_c_normal = F_key / (0.5 * h1 * sigma_key);
 l_c_shear = F_key / (tao_key * w1);
+
+l_c = max(l_c_normal, l_c_shear);
+
+%% Key selection for gear A - segmented shaft
+
+% Select standard key based on 5.25" shaft diameter
+w1 = 11/8;
+h1 = 11/8;
+
+% Force at the key
+F_key = T / (Soder_d / 2);
+
+% Acceptable stresses at key
+sigma_key = Sy / n_desired;
+tao_key = (.577 * Sy) / n_desired;
+
+% Length based on stresses
+l_a_normal = F_key / (0.5 * h1 * sigma_key);
+l_a_shear = F_key / (tao_key * w1);
+
+l_a = max(l_a_normal, l_a_shear);
+
+%% Key selection for gear C - segmented shaft
+
+% Select standard key based on 4.25" shaft diameter
+w1 = 3/4;
+h1 = 3/4;
+
+% Force at the key
+F_key = T / (Soder_d / 2);
+
+% Acceptable stresses at key
+sigma_key = Sy / n_desired;
+tao_key = (.577 * Sy) / n_desired;
+
+% Length based on stresses
+l_c_normal = F_key / (0.5 * h1 * sigma_key);
+l_c_shear = F_key / (tao_key * w1);
+
+l_c = max(l_c_normal, l_c_shear);
 
 %% Bearings Selection
 
@@ -541,29 +566,29 @@ TS_B = (.25 * 4 * B_z) / (3*pi * .75^2 / 4);
 
 %% Gear Calculations
 
-St = 22000; %psi for Steel, flame hardened type A Grade 1
+St = 22000; % psi for Steel, flame hardened type A Grade 1
 Yn = .95;
 Kt = 1;
 Kr = 1; % for 99% reliability
 sigma_gears = ((St * Yn/ (Kt * Kr)) /n_desired);
 Qv = 7;
 
-%Gear 3:
+% Gear 3
 Kv3 = 1.4;
 Wt3 = A_y;
 Pd3 = 1;
 teethnum3 = 24;
 Y3 = .337;
 
-%Face width for gear 3:
+% Face width for gear 3:
 Face3 = Kv3 * Wt3 * Pd3 / (sigma_gears * Y3);
 
-%Gear 4:
+% Gear 4
 Kv4 = 1.2;
 Wt4 = C_z;
 Pd4 = 2;
 teethnum4 = 20;
 Y4 = .322;
 
-%Face width for gear 4:
+% Face width for gear 4
 Face4 = Kv4 * Wt4 * Pd4 / (sigma_gears * Y4);
